@@ -18,10 +18,14 @@ in {
       sys = "systemctl";
       jou = "journalctl";
     };
+
+    # set prompt
     initExtraFirst = lib.mkIf cfg.lite ''
       autoload -Uz promptinit
+      promptinit
       prompt walters
     '';
+
     initExtra = builtins.readFile ./init.zsh;
     dirHashes = { };
     plugins = with pkgs; [
