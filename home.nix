@@ -1,7 +1,9 @@
 { config, pkgs, lib, ... }:
 with lib;
 
-let cfg = config.home.my;
+let
+  cfg = config.home.my;
+  isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [ ./neovim.nix ./zsh.nix ];
 
@@ -32,7 +34,9 @@ in {
 
   config = mkIf cfg.enable {
     # https://nix-community.github.io/home-manager/options.html
-    services.vscode-server.enable = true;
+    services = mkIf isLinux {
+      vscode-server.enable = true;
+    };
 
     home.packages = with pkgs;
       let

@@ -1,4 +1,7 @@
 {
   description = "My Home-Manager module";
-  outputs = { ... }: { nixosModules.home = import ./home.nix; };
+  outputs = { self, ... }: {
+    nixosModules.home = self.homeModule;
+    homeModule = import ./home.nix;
+  };
 }
