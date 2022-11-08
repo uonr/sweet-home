@@ -1,2 +1,2 @@
 # sweet-home
-my home-manager module
+My Home-Manager module
