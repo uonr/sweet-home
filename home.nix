@@ -34,9 +34,6 @@ in {
 
   config = mkIf cfg.enable {
     # https://nix-community.github.io/home-manager/options.html
-    services = mkIf isLinux {
-      vscode-server.enable = true;
-    };
 
     home.packages = with pkgs;
       let
