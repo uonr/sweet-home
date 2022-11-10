@@ -129,6 +129,7 @@ in {
 
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;
-  };
 
+    services = if isLinux then { vscode-server.enable = true; } else { };
+  };
 }
