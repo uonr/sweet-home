@@ -5,7 +5,7 @@ let
   cfg = config.home.my;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  imports = [ ./neovim.nix ./zsh.nix ];
+  imports = [ ./neovim.nix ./zsh.nix ./aliases.nix ];
 
   options = {
     home.my = {
@@ -52,6 +52,8 @@ in {
           dprint
         ];
       in basic ++ extra ++ gui ++ development ++ entertainment;
+
+    programs.bash.enable = true;
 
     programs.exa = {
       enable = true;
