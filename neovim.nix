@@ -1,16 +1,7 @@
 { pkgs, config, lib, ... }:
+with pkgs.vimPlugins;
 let
   cfg = config.home.my;
-  vim-chinese-document = pkgs.vimUtils.buildVimPlugin {
-    name = "vimcdoc";
-    pname = "vimcdoc";
-    src = pkgs.fetchFromGitHub {
-      owner = "yianwillis";
-      repo = "vimcdoc";
-      rev = "c0d3edb1de4bd83df08e99c5f63393069a17f066";
-      sha256 = "blUAz0JDG6ts5WLDogHMTdnE/RgUu9QEeeT9xjm3TJI=";
-    };
-  };
   neovim-beacon = pkgs.vimUtils.buildVimPlugin {
     name = "beacon-nvim";
     pname = "beacon-nvim";
@@ -21,8 +12,7 @@ let
       sha256 = "kcjOLjY/+5p3cYSpWTK8i0u69MhgCvvNVB6zDFHjcjI=";
     };
   };
-  basicPlugins = with pkgs.vimPlugins; [
-    vim-surround
+  basicPlugins = [
     nvim-autopairs
     editorconfig-vim
     vim-surround
@@ -30,16 +20,14 @@ let
     vim-sleuth
     vim-nix
     vim-commentary
+    gruvbox
   ];
-  extraPlugins = with pkgs.vimPlugins;
-    lib.optionals (!cfg.lite) [
-      vim-airline
-      vim-airline-themes
-      vim-chinese-document
-      gruvbox
-      indent-blankline-nvim-lua
-      neovim-beacon
-    ];
+  extraPlugins = lib.optionals (!cfg.lite) [
+    vim-airline
+    vim-airline-themes
+    indent-blankline-nvim-lua
+    neovim-beacon
+  ];
 in {
   programs.neovim = {
     enable = true;
