@@ -37,20 +37,21 @@ in {
 
     home.packages = with pkgs;
       let
-        basic = [ ripgrep fd btop du-dust python3 tealdeer ];
+        basic = [ ripgrep fd btop ];
+        extra = optionals (!cfg.lite) [ du-dust tealdeer ];
         gui = optionals cfg.gui [ google-chrome firefox ];
         entertainment = optionals cfg.entertainment [ yt-dlp you-get ];
         development = optionals cfg.development [
           gojq
+          python3
           shellcheck
           rustup
-          python3
           nil
           nixfmt
           hut
           dprint
         ];
-      in basic ++ gui ++ development ++ entertainment;
+      in basic ++ extra ++ gui ++ development ++ entertainment;
 
     programs.exa = {
       enable = true;
