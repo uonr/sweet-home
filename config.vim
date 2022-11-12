@@ -59,9 +59,6 @@ vmap <Tab> <Leader><Leader>
 
 " Plugins
 let g:airline_powerline_fonts = 1
-nmap <leader>/ <Plug>CommentaryLine
-xmap <leader>/ <Plug>Commentary
-omap <leader>/ <Plug>Commentary
 
 " Colorscheme
 set background=dark
