@@ -41,16 +41,8 @@ in {
         extra = optionals (!cfg.lite) [ du-dust tealdeer ];
         gui = optionals cfg.gui [ google-chrome firefox ];
         entertainment = optionals cfg.entertainment [ yt-dlp you-get ];
-        development = optionals cfg.development [
-          gojq
-          python3
-          shellcheck
-          rustup
-          nil
-          nixfmt
-          hut
-          dprint
-        ];
+        development =
+          optionals cfg.development [ gojq shellcheck nil nixfmt hut dprint ];
       in basic ++ extra ++ gui ++ development ++ entertainment;
 
     programs.bash.enable = true;
