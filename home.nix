@@ -42,7 +42,7 @@ in {
         gui = optionals cfg.gui [ google-chrome firefox ];
         entertainment = optionals cfg.entertainment [ yt-dlp you-get ];
         development =
-          optionals cfg.development [ gojq shellcheck nil nixfmt hut dprint ];
+          optionals cfg.development [ gojq shellcheck nil nixfmt hut ];
       in basic ++ extra ++ gui ++ development ++ entertainment;
 
     programs.bash.enable = true;
