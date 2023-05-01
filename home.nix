@@ -87,7 +87,7 @@ in {
 
     programs.direnv = {
       enable = cfg.development;
-      nix-direnv.enable = true;
+      nix-direnv.enable = false;
     };
 
     programs.helix = { enable = cfg.development; };
