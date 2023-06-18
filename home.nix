@@ -1,9 +1,7 @@
 { config, pkgs, lib, ... }:
 with lib;
 
-let
-  cfg = config.home.my;
-  isLinux = pkgs.stdenv.isLinux;
+let cfg = config.home.my;
 in {
   imports = [ ./neovim.nix ./zsh.nix ./aliases.nix ];
 
@@ -90,7 +88,7 @@ in {
       nix-direnv.enable = false;
     };
 
-    programs.helix = { enable = cfg.development; };
+    # programs.helix = { enable = cfg.development; };
 
     programs.bat.enable = !cfg.lite;
 
@@ -124,7 +122,5 @@ in {
 
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;
-
-    services = if isLinux then { vscode-server.enable = true; } else { };
   };
 }

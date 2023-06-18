@@ -4,9 +4,11 @@ let
   cfg = config.home.my;
   isLinux = pkgs.stdenv.isLinux;
   isDarwin = pkgs.stdenv.isDarwin;
-  common = { "@" = "cd $(git rev-parse --show-toplevel)/"; };
-  linuxAliases = optionalAttrs isLinux {
+  common = {
+    "@" = "cd $(git rev-parse --show-toplevel)/";
     doco = "docker-compose";
+  };
+  linuxAliases = optionalAttrs isLinux {
     switch = "sudo nixos-rebuild switch --flake";
     sys = "systemctl";
     jou = "journalctl";
