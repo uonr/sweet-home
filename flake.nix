@@ -1,8 +1,9 @@
 {
   description = "My Home-Manager module";
-  inputs = { nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable"; };
-  outputs = { self, nixpkgs, ... }: {
-    nixosModules.home = self.homeModule;
+  inputs = { };
+  outputs = { self, ... }: {
+    nixosModule = ({ pkgs, ... }: { imports = [ ./nixos.nix ]; });
+    nixosModules.nixos = self.nixosModule;
     homeModule = import ./home.nix;
   };
 }
