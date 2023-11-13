@@ -8,7 +8,7 @@ in {
       enable = true;
       enableAutosuggestions = false;
       enableCompletion = true;
-      enableSyntaxHighlighting = true;
+      syntaxHighlighting.enable = true;
       autocd = true;
       # https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html
       defaultKeymap = "emacs";
