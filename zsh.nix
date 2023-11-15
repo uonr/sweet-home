@@ -5,7 +5,7 @@ in lib.mkIf cfg.enable {
     enable = true;
     enableAutosuggestions = false;
     enableCompletion = true;
-    syntaxHighlighting.enable = true;
+    enableSyntaxHighlighting = true;
     autocd = true;
     # https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html
     defaultKeymap = "emacs";

@@ -91,7 +91,7 @@ in {
       nix-direnv.enable = false;
     };
 
-    programs.eza = {
+    programs.exa = {
       enable = true;
       enableAliases = true;
       icons = cfg.icons;
