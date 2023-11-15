@@ -1,96 +1,111 @@
 { config, pkgs, lib, ... }:
-with lib;
 
-let cfg = config.home.my;
+let cfg = config.home.sweet;
 in {
-  imports = [ ./neovim.nix ./zsh.nix ./aliases.nix ];
-
-  options = {
-    home.my = {
-      enable = mkOption {
+  options.home.sweet = with lib; {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+    };
+    fonts = {
+      normal = mkOption {
         type = types.bool;
         default = false;
       };
-      gui = mkOption {
+      nerd = mkOption {
         type = types.bool;
         default = false;
       };
-      development = mkOption {
-        type = types.bool;
-        default = false;
-      };
-      entertainment = mkOption {
-        type = types.bool;
-        default = false;
-      };
-      lite = mkOption {
-        type = types.bool;
-        default = false;
-      };
+    };
+    icons = mkOption {
+      type = types.bool;
+      default = cfg.fonts.nerd;
+    };
+    small = mkOption {
+      type = types.bool;
+      default = false;
+    };
+    maintenance = mkOption {
+      type = types.bool;
+      default = false;
+    };
+    crawler = mkOption {
+      type = types.bool;
+      default = false;
+    };
+    development = mkOption {
+      type = types.bool;
+      default = false;
+    };
+    prompt = mkOption {
+      type = types.enum [ "starship" "simple" ];
+      default = "simple";
     };
   };
+  imports = [ ./zsh.nix ./git.nix ./aliases.nix ];
+  config = lib.mkIf cfg.enable {
+    # This value determines the Home Manager release that your configuration is
+    # compatible with. This helps avoid breakage when a new Home Manager release
+    # introduces backwards incompatible changes.
+    #
+    # You should not change this value, even if you update Home Manager. If you do
+    # want to update the value, then make sure to first check the Home Manager
+    # release notes.
+    home.stateVersion = "23.05"; # Please read the comment before changing.
 
-  config = mkIf cfg.enable {
-    # https://nix-community.github.io/home-manager/options.html
-
+    # The home.packages option allows you to install Nix packages into your
+    # environment.
     home.packages = with pkgs;
       let
-        basic = [ ripgrep fd btop ];
-        extra = optionals (!cfg.lite) [ du-dust tealdeer ];
-        gui = optionals cfg.gui [ google-chrome firefox ];
-        entertainment = optionals cfg.entertainment [ yt-dlp you-get ];
-        development =
-          optionals cfg.development [ gojq shellcheck nil nixfmt hut ];
-      in basic ++ extra ++ gui ++ development ++ entertainment;
-
-    programs.bash.enable = true;
-
-    programs.eza = {
-      enable = true;
-      enableAliases = true;
-    };
-
-    programs.tmux = {
-      enable = true;
-      clock24 = true;
-      prefix = "`";
-      extraConfig = ''
-        set -g mouse on
-      '';
-      plugins = with pkgs.tmuxPlugins; [ gruvbox ];
-    };
-
-    programs.git = {
-      enable = true;
-      difftastic.enable = true;
-      ignores = [ ".DS_Store" ];
-      extraConfig = {
-        init = { defaultBranch = "master"; };
-        push = { autoSetupRemote = true; };
-      };
-
-      aliases = {
-        a = "add .";
-        ci = "commit -S";
-        cia = "commit -S --amend";
-        co = "checkout";
-        st = "status";
-        br = "branch";
-        sw = "switch";
-        re = "rebase -i HEAD~10";
-        lg =
-          "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
-      };
-    };
+        basic = [ ripgrep fd htop mosh ];
+        development = lib.optionals cfg.development [
+          nil
+          nixfmt
+          nixpkgs-fmt
+          hut
+          shellcheck
+        ];
+        maintanence = lib.optionals cfg.maintenance [ btop du-dust tealdeer ];
+        crawler = lib.optionals cfg.crawler [ yt-dlp you-get ];
+        nerd-fonts = lib.optionals cfg.fonts.nerd [
+          (nerdfonts.override {
+            # https://github.com/ryanoasis/nerd-fonts#patched-fonts
+            fonts = [
+              "FantasqueSansMono"
+              "FiraCode"
+              "DroidSansMono"
+              "IBMPlexMono"
+              "Iosevka"
+              "IosevkaTerm"
+              "JetBrainsMono"
+              "VictorMono"
+            ];
+          })
+        ];
+        fonts =
+          lib.optionals cfg.fonts.normal [ sarasa-gothic iosevka ibm-plex ];
+      in basic ++ nerd-fonts ++ fonts ++ development ++ maintanence ++ crawler;
 
     programs.direnv = {
       enable = cfg.development;
       nix-direnv.enable = false;
     };
 
-    # programs.helix = { enable = cfg.development; };
+    programs.eza = {
+      enable = true;
+      enableAliases = true;
+      icons = cfg.icons;
+      extraOptions = [ "--group-directories-first" ];
+    };
 
-    programs.bat.enable = !cfg.lite;
+    programs.tmux = {
+      enable = true;
+      clock24 = true;
+      prefix = "`";
+      mouse = true;
+      plugins = with pkgs.tmuxPlugins;
+        [ (if cfg.icons then catppuccin else onedark-theme) ];
+    };
 
     programs.zoxide.enable = true;
 
@@ -101,24 +116,22 @@ in {
       tmux.enableShellIntegration = true;
     };
 
-    programs.alacritty = mkIf cfg.gui {
-      enable = true;
+    programs.bat.enable = lib.mkDefault (!cfg.small);
+
+    programs.alacritty = lib.mkIf config.programs.alacritty.enable {
       # https://github.com/alacritty/alacritty/blob/master/alacritty.yml
       settings = {
         window = { padding = { x = 6; }; };
-        font.normal.family = "IBM Plex Mono";
+        font.size = 14.0;
+        font.normal.family = "BlexMono Nerd Font Mono";
       };
     };
 
-    # This value determines the Home Manager release that your
-    # configuration is compatible with. This helps avoid breakage
-    # when a new Home Manager release introduces backwards
-    # incompatible changes.
-    #
-    # You can update Home Manager without changing this value. See
-    # the Home Manager release notes for a list of state version
-    # changes in each release.
-    home.stateVersion = mkDefault "23.05";
+    programs.helix = lib.mkIf config.programs.helix.enable {
+
+    };
+
+    xdg.configFile."wezterm/wezterm.lua".source = ./wezterm.lua;
 
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;

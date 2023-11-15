@@ -1,7 +1,7 @@
 { pkgs, lib, config, ... }:
 with lib;
 let
-  cfg = config.home.my;
+  cfg = config.home.sweet;
   isLinux = pkgs.stdenv.isLinux;
   isDarwin = pkgs.stdenv.isDarwin;
   common = {
@@ -13,8 +13,7 @@ let
     sys = "systemctl";
     jou = "journalctl";
   };
-  darwinAliases =
-    optionalAttrs isDarwin { switch-home = "home-manager switch --flake"; };
+  darwinAliases = optionalAttrs isDarwin { switch = "home-manager switch"; };
   shellAliases = common // linuxAliases // darwinAliases;
 in {
   config = lib.mkIf cfg.enable {

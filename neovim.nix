@@ -2,8 +2,8 @@
 with pkgs.vimPlugins;
 let
   readFile = builtins.readFile;
-  cfg = config.home.my;
-  ifExtra = lib.optionals (!cfg.lite);
+  cfg = config.home.sweet;
+  ifExtra = lib.optionals (!cfg.small);
   neovim-beacon = pkgs.vimUtils.buildVimPlugin {
     name = "beacon-nvim";
     pname = "beacon-nvim";
