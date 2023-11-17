@@ -39,7 +39,7 @@ in lib.mkIf cfg.enable {
     presetsPath = if cfg.icons then
       "${pkgs.starship}/share/starship/presets/nerd-font-symbols.toml"
     else
-      "${pkgs.starship}/share/starship/presets/plain-text.toml";
+      "${pkgs.starship}/share/starship/presets/plain-text-symbols.toml";
     preset = builtins.fromTOML (builtins.readFile presetsPath);
   in lib.mkIf (cfg.prompt == "starship") {
     enable = true;
