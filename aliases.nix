@@ -9,7 +9,6 @@ let
     doco = "docker-compose";
   };
   linuxAliases = optionalAttrs isLinux {
-    switch = "sudo nixos-rebuild switch --flake";
     sys = "systemctl";
     jou = "journalctl";
   };
