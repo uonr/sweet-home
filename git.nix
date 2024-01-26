@@ -3,7 +3,7 @@ let cfg = config.home.sweet;
 in lib.mkIf cfg.enable {
   programs.git = {
     enable = true;
-    difftastic.enable = !cfg.small;
+    difftastic.enable = cfg.level == "extra";
     ignores = [ ".DS_Store" ".direnv" ];
     extraConfig = {
       init = { defaultBranch = "master"; };
@@ -12,9 +12,10 @@ in lib.mkIf cfg.enable {
 
     aliases = {
       a = "add .";
-      ci = "commit -S";
-      cia = "commit -S --amend";
+      c = "commit";
+      ca = "commit --amend";
       co = "checkout";
+      pl = "pull --rebase --prune";
       st = "status";
       br = "branch";
       sw = "switch";

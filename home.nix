@@ -21,25 +21,15 @@ in {
       type = types.bool;
       default = cfg.fonts.nerd;
     };
-    small = mkOption {
-      type = types.bool;
-      default = false;
+    level = mkOption {
+      type = types.enum [ "minimal" "normal" "extra" ];
+      default = "normal";
     };
-    maintenance = mkOption {
-      type = types.bool;
-      default = false;
-    };
-    crawler = mkOption {
-      type = types.bool;
-      default = false;
-    };
-    development = mkOption {
-      type = types.bool;
-      default = false;
-    };
-    prompt = mkOption {
-      type = types.enum [ "starship" "simple" ];
-      default = "simple";
+    options.programs.wezterm = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+      };
     };
   };
   imports = [ ./zsh.nix ./git.nix ./aliases.nix ];
@@ -51,22 +41,26 @@ in {
     # You should not change this value, even if you update Home Manager. If you do
     # want to update the value, then make sure to first check the Home Manager
     # release notes.
-    home.stateVersion = "23.05"; # Please read the comment before changing.
+    home.stateVersion = lib.mkDefault "23.05"; # Please read the comment before changing.
 
     # The home.packages option allows you to install Nix packages into your
     # environment.
     home.packages = with pkgs;
       let
-        basic = [ ripgrep fd htop mosh ];
-        development = lib.optionals cfg.development [
+        basic = [ ripgrep fd htop ];
+        common = lib.optionals (cfg.level != "minimal") [
           nil
           nixfmt
           nixpkgs-fmt
+        ];
+        extra = lib.optionals (cfg.level == "extra") [
           hut
           shellcheck
+          btop
+          du-dust
+          tealdeer
         ];
-        maintanence = lib.optionals cfg.maintenance [ btop du-dust tealdeer ];
-        crawler = lib.optionals cfg.crawler [ yt-dlp you-get ];
+
         nerd-fonts = lib.optionals cfg.fonts.nerd [
           (nerdfonts.override {
             # https://github.com/ryanoasis/nerd-fonts#patched-fonts
@@ -77,46 +71,60 @@ in {
               "IBMPlexMono"
               "Iosevka"
               "IosevkaTerm"
+              "IntelOneMono"
               "JetBrainsMono"
               "VictorMono"
+              "CascadiaCode"
+              "Go-Mono"
+              "SpaceMono"
+              "Hack"
+              "Overpass"
+              "Lilex"
             ];
           })
         ];
         fonts =
           lib.optionals cfg.fonts.normal [ sarasa-gothic iosevka ibm-plex ];
-      in basic ++ nerd-fonts ++ fonts ++ development ++ maintanence ++ crawler;
 
-    programs.direnv = {
-      enable = cfg.development;
-      nix-direnv.enable = false;
-    };
+      in
+      basic ++ common ++ extra ++ nerd-fonts ++ fonts ++ (lib.optional config.programs.wezterm.enable wezterm);
 
-    programs.exa = {
-      enable = true;
+    programs.eza = {
+      enable = lib.mkDefault cfg.level != "minimal";
       enableAliases = true;
       icons = cfg.icons;
       extraOptions = [ "--group-directories-first" ];
     };
 
     programs.tmux = {
-      enable = true;
+      enable = lib.mkDefault true;
       clock24 = true;
       prefix = "`";
       mouse = true;
-      plugins = with pkgs.tmuxPlugins;
-        [ (if cfg.icons then catppuccin else onedark-theme) ];
+      plugins = with pkgs.tmuxPlugins; let
+        theme = lib.optionals (cfg.level != "minimal") [ (if cfg.icons then catppuccin else onedark-theme) ];
+      in
+      theme;
+    };
+
+    programs.fish = {
+      interactiveShellInit = ''
+        set fish_greeting # Disable greeting
+      '';
+      plugins = [
+        # Enable a plugin (here grc for colorized command output) from nixpkgs
+        { name = "grc"; src = pkgs.fishPlugins.grc.src; }
+      ];
     };
 
     programs.zoxide.enable = true;
 
     # fzf https://github.com/junegunn/fzf#fzf-tmux-script
     programs.fzf = {
-      enable = true;
+      enable = lib.mkDefault cfg.level != "minimal";
       defaultCommand = "fd --type f";
       tmux.enableShellIntegration = true;
     };
-
-    programs.bat.enable = lib.mkDefault (!cfg.small);
 
     programs.alacritty = lib.mkIf config.programs.alacritty.enable {
       # https://github.com/alacritty/alacritty/blob/master/alacritty.yml
@@ -127,11 +135,11 @@ in {
       };
     };
 
-    programs.helix = lib.mkIf config.programs.helix.enable {
+    programs.helix = lib.mkIf config.programs.helix.enable { };
 
+    xdg.configFile."wezterm/wezterm.lua" = lib.mkIf config.programs.wezterm.enable {
+      source = ./wezterm.lua;
     };
-
-    xdg.configFile."wezterm/wezterm.lua".source = ./wezterm.lua;
 
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;

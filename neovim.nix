@@ -3,7 +3,10 @@ with pkgs.vimPlugins;
 let
   readFile = builtins.readFile;
   cfg = config.home.sweet;
-  ifExtra = lib.optionals (!cfg.small);
+  filter = {
+    common = lib.optionals (cfg.level != "minimal");
+    extra = lib.optionals (cfg.level == "extra");
+  };
   neovim-beacon = pkgs.vimUtils.buildVimPlugin {
     name = "beacon-nvim";
     pname = "beacon-nvim";
@@ -15,7 +18,8 @@ let
     };
   };
   plugins = {
-    basic = [
+    minimal = [ ];
+    common = filter.common [
       {
         # https://github.com/lewis6991/impatient.nvim
         plugin = impatient-nvim;
@@ -24,15 +28,24 @@ let
       }
       plenary-nvim
     ];
+    extra = [ ];
     editor = {
-      basic = [
+      minimal = [
         vim-surround
+        vim-nix
+        nvim-autopairs
+        {
+          plugin = vim-commentary;
+          type = "vim";
+          config = readFile ./neovim/commentary.vim;
+        }
+      ];
+      common = filter.common [
         # {
         #   # https://github.com/machakann/vim-sandwich/
         #   plugin = vim-sandwich;
         # }
         vim-repeat
-        vim-nix
         {
           # https://github.com/folke/which-key.nvim/
           plugin = which-key-nvim;
@@ -55,21 +68,16 @@ let
           type = "lua";
           config = "require('flit').setup()";
         }
-        nvim-autopairs
         editorconfig-vim
-        {
-          plugin = vim-commentary;
-          type = "vim";
-          config = readFile ./neovim/commentary.vim;
-        }
       ];
-      extra = ifExtra [
+      extra = filter.extra [
         vim-sleuth # Heuristically set buffer options
       ];
     };
     ui = {
-      basic = [ gruvbox indent-blankline-nvim-lua ];
-      extra = ifExtra [
+      minimal = [ ];
+      common = filter.common [ gruvbox indent-blankline-nvim-lua ];
+      extra = filter.extra [
         edge
         vim-smoothie
         neovim-beacon
@@ -87,14 +95,16 @@ let
       ];
     };
   };
-in {
+in
+{
   programs.neovim = {
-    enable = true;
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
     extraConfig = builtins.readFile ./config.vim;
-    plugins = plugins.basic ++ plugins.editor.basic ++ plugins.editor.extra
-      ++ plugins.ui.basic ++ plugins.ui.extra;
+    plugins =
+      plugins.minimal ++ plugins.common ++ plugins.extra ++
+      plugins.editor.minimal ++ plugins.editor.common ++ plugins.editor.extra ++
+      plugins.ui.minimal ++ plugins.ui.common ++ plugins.ui.extra;
   };
 }

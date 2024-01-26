@@ -1,0 +1,19 @@
+{
+  "editor.formatOnSave": true,
+  "nix.serverSettings": {
+    // settings for 'nil' LSP
+    "nil": {
+      "diagnostics": {
+        "ignored": [
+          "unused_binding",
+          "unused_with"
+        ]
+      },
+      "formatting": {
+        "command": [
+          "nixpkgs-fmt"
+        ]
+      }
+    }
+  }
+}

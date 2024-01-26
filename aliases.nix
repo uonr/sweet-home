@@ -15,9 +15,11 @@ let
   };
   darwinAliases = optionalAttrs isDarwin { switch = "home-manager switch"; };
   shellAliases = common // linuxAliases // darwinAliases;
-in {
+in
+{
   config = lib.mkIf cfg.enable {
     programs.zsh.shellAliases = shellAliases;
     programs.bash.shellAliases = shellAliases;
+    programs.fish.shellAliases = shellAliases;
   };
 }
