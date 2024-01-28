@@ -12,7 +12,7 @@ in lib.mkIf cfg.enable {
     history.path = "$HOME/.config/zsh/.zsh_history";
 
     # set prompt
-    initExtraFirst = lib.mkIf (cfg.prompt == "simple") ''
+    initExtraFirst = lib.mkIf (!config.programs.starship.enable) ''
       autoload -Uz promptinit
       promptinit
       prompt walters
