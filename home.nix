@@ -50,7 +50,7 @@ in {
         basic = [ ripgrep fd htop ];
         common = lib.optionals (cfg.level != "minimal") [
           nil
-          nixfmt
+          nixfmt-rfc-style
           nixpkgs-fmt
         ];
         extra = lib.optionals (cfg.level == "extra") [
@@ -91,7 +91,6 @@ in {
 
     programs.eza = {
       enable = lib.mkDefault cfg.level != "minimal";
-      enableAliases = true;
       icons = cfg.icons;
       extraOptions = [ "--group-directories-first" ];
     };
