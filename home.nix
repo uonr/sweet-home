@@ -50,7 +50,7 @@ in {
         basic = [ ripgrep fd htop ];
         common = lib.optionals (cfg.level != "minimal") [
           nil
-          nixfmt-rfc-style
+          nixfmt
           nixpkgs-fmt
         ];
         extra = lib.optionals (cfg.level == "extra") [
