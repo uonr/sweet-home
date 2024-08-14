@@ -2,6 +2,7 @@
 
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
+local is_darwin = wezterm.target_triple:find('darwin') ~= nil
 
 -- This table will hold the configuration.
 local config = {}
@@ -14,9 +15,38 @@ end
 
 -- This is where you actually apply your config choices
 
+config.default_prog = require('shell')
 config.font = wezterm.font 'JetBrains Mono'
-config.font_size = 14
-config.color_scheme = 'Tokyo Night'
+if is_darwin then
+    config.font_size = 16.0
+else 
+    config.font_size = 14.0
+end
+config.color_scheme = 'Orangish (terminal.sexy)'
+-- The set of schemes that we like and want to put in our rotation
+local schemes = {}
+for name, scheme in pairs(wezterm.get_builtin_color_schemes()) do
+  table.insert(schemes, name)
+end
+
+local enable_random_scheme = false
+
+wezterm.on('window-config-reloaded', function(window, pane)
+    -- If there are no overrides, this is our first time seeing
+    -- this window, so we can pick a random scheme.
+    if not window:get_config_overrides() and enable_random_scheme then
+        -- Pick a random scheme name
+        local scheme = schemes[math.random(#schemes)]
+        window:set_config_overrides {
+            color_scheme = scheme,
+        }
+    end
+    -- To check scheme name, use CTRL-SHIFT-L to open the debug overlay,
+    -- then type in 
+    --     window:get_config_overrides().color_scheme
+    -- https://github.com/wez/wezterm/discussions/5024
+end)
+  
 
 config.window_padding = {
     left = 4,

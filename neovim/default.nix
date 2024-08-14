@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 with pkgs.vimPlugins;
 let
   readFile = builtins.readFile;
@@ -17,41 +22,39 @@ let
       sha256 = "kcjOLjY/+5p3cYSpWTK8i0u69MhgCvvNVB6zDFHjcjI=";
     };
   };
+  numbers-nvim = pkgs.vimUtils.buildVimPlugin {
+    name = "numbers-nvim";
+    src = pkgs.fetchFromGitHub {
+      owner = "nkakouros-original";
+      repo = "numbers.nvim";
+      rev = "d1f95879a4cdf339f59e6a2dc6aef26912cf554c";
+      sha256 = "eB0G1PUyS9Q6Jv7mku+SW9PCPnoUYz7HRhed38hxskw=";
+    };
+  };
   plugins = {
     minimal = [ ];
-    common = filter.common [
+    common = filter.common [ plenary-nvim ];
+    extra = [
       {
-        # https://github.com/lewis6991/impatient.nvim
-        plugin = impatient-nvim;
+        plugin = neogit;
         type = "lua";
-        config = "require('impatient')";
+        config = ''
+          local neogit = require('neogit')
+          neogit.setup {}
+        '';
       }
-      plenary-nvim
+      diffview-nvim
+      telescope-nvim
     ];
-    extra = [ ];
     editor = {
       minimal = [
         vim-surround
-        vim-nix
         nvim-autopairs
-        {
-          plugin = vim-commentary;
-          type = "vim";
-          config = readFile ./neovim/commentary.vim;
-        }
       ];
       common = filter.common [
-        # {
-        #   # https://github.com/machakann/vim-sandwich/
-        #   plugin = vim-sandwich;
-        # }
-        vim-repeat
-        {
-          # https://github.com/folke/which-key.nvim/
-          plugin = which-key-nvim;
-          type = "lua";
-          config = readFile ./neovim/which-key.lua;
-        }
+        nvim-autopairs
+        comment-nvim
+        numbers-nvim
         {
           # Motion improvement
           # https://github.com/ggandor/leap.nvim
@@ -68,7 +71,6 @@ let
           type = "lua";
           config = "require('flit').setup()";
         }
-        editorconfig-vim
       ];
       extra = filter.extra [
         vim-sleuth # Heuristically set buffer options
@@ -76,7 +78,12 @@ let
     };
     ui = {
       minimal = [ ];
-      common = filter.common [ gruvbox indent-blankline-nvim-lua ];
+      common = filter.common [
+        gruvbox
+        indent-blankline-nvim-lua
+        lush-nvim
+        zenbones-nvim
+      ];
       extra = filter.extra [
         edge
         vim-smoothie
@@ -85,26 +92,26 @@ let
           # https://github.com/RRethy/vim-illuminate/
           plugin = vim-illuminate;
         }
-        {
-          # Status Line
-          # https://github.com/feline-nvim/feline.nvim
-          plugin = feline-nvim;
-          type = "lua";
-          config = readFile ./neovim/feline.lua;
-        }
       ];
     };
   };
 in
-{
+lib.mkIf config.programs.neovim.enable {
   programs.neovim = {
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
     extraConfig = builtins.readFile ./config.vim;
+    extraLuaConfig = builtins.readFile ./config.lua;
     plugins =
-      plugins.minimal ++ plugins.common ++ plugins.extra ++
-      plugins.editor.minimal ++ plugins.editor.common ++ plugins.editor.extra ++
-      plugins.ui.minimal ++ plugins.ui.common ++ plugins.ui.extra;
+      plugins.minimal
+      ++ plugins.common
+      ++ plugins.extra
+      ++ plugins.editor.minimal
+      ++ plugins.editor.common
+      ++ plugins.editor.extra
+      ++ plugins.ui.minimal
+      ++ plugins.ui.common
+      ++ plugins.ui.extra;
   };
 }

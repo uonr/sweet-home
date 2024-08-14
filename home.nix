@@ -1,7 +1,14 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
-let cfg = config.home.sweet;
-in {
+let
+  cfg = config.home.sweet;
+in
+{
   options.home.sweet = with lib; {
     enable = mkOption {
       type = types.bool;
@@ -22,7 +29,11 @@ in {
       default = cfg.fonts.nerd;
     };
     level = mkOption {
-      type = types.enum [ "minimal" "normal" "extra" ];
+      type = types.enum [
+        "minimal"
+        "normal"
+        "extra"
+      ];
       default = "normal";
     };
     options.programs.wezterm = {
@@ -32,7 +43,12 @@ in {
       };
     };
   };
-  imports = [ ./zsh.nix ./git.nix ./aliases.nix ];
+  imports = [
+    ./zsh.nix
+    ./git.nix
+    ./aliases.nix
+    ./neovim
+  ];
   config = lib.mkIf cfg.enable {
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -45,9 +61,14 @@ in {
 
     # The home.packages option allows you to install Nix packages into your
     # environment.
-    home.packages = with pkgs;
+    home.packages =
+      with pkgs;
       let
-        basic = [ ripgrep fd htop ];
+        basic = [
+          ripgrep
+          fd
+          htop
+        ];
         common = lib.optionals (cfg.level != "minimal") [
           nil
           nixfmt-rfc-style
@@ -83,15 +104,28 @@ in {
             ];
           })
         ];
-        fonts =
-          lib.optionals cfg.fonts.normal [ sarasa-gothic iosevka ibm-plex ];
+        fonts = lib.optionals cfg.fonts.normal [
+          sarasa-gothic
+          iosevka
+          ibm-plex
+          monaspace
+          cascadia-code
+          noto-fonts
+        ];
 
       in
-      basic ++ common ++ extra ++ nerd-fonts ++ fonts ++ (lib.optional config.programs.wezterm.enable wezterm);
+      basic
+      ++ common
+      ++ extra
+      ++ nerd-fonts
+      ++ fonts
+      ++ (lib.optional config.programs.wezterm.enable wezterm);
 
     programs.eza = {
       enable = lib.mkDefault cfg.level != "minimal";
       icons = cfg.icons;
+      enableFishIntegration = true;
+      enableZshIntegration = true;
       extraOptions = [ "--group-directories-first" ];
     };
 
@@ -100,18 +134,32 @@ in {
       clock24 = true;
       prefix = "`";
       mouse = true;
-      plugins = with pkgs.tmuxPlugins; let
-        theme = lib.optionals (cfg.level != "minimal") [ (if cfg.icons then catppuccin else onedark-theme) ];
-      in
-      theme;
+      plugins =
+        with pkgs.tmuxPlugins;
+        let
+          theme = lib.optionals (cfg.level != "minimal") [
+            {
+              plugin = dracula;
+              # https://draculatheme.com/tmux
+              extraConfig = ''
+                set -g @dracula-show-battery false
+                set -g @dracula-show-powerline false
+                set -g @dracula-refresh-rate 5
+                set -g @dracula-show-left-icon session
+                set -g @dracula-plugins "ssh-session cpu-usage ram-usage"
+              '';
+            }
+          ];
+        in
+        theme;
     };
 
     programs.fish = {
       interactiveShellInit = ''
         set fish_greeting # Disable greeting
       '';
-      plugins = [
-      ];
+      plugins = [ ];
+      shellInit = builtins.readFile ./init.fish;
     };
 
     programs.zoxide.enable = true;
@@ -126,17 +174,26 @@ in {
     programs.alacritty = lib.mkIf config.programs.alacritty.enable {
       # https://github.com/alacritty/alacritty/blob/master/alacritty.yml
       settings = {
-        window = { padding = { x = 6; }; };
+        window = {
+          padding = {
+            x = 6;
+          };
+        };
         font.size = 14.0;
         font.normal.family = "BlexMono Nerd Font Mono";
       };
     };
 
-    programs.helix = lib.mkIf config.programs.helix.enable { };
-
-    xdg.configFile."wezterm/wezterm.lua" = lib.mkIf config.programs.wezterm.enable {
-      source = ./wezterm.lua;
+    programs.helix = lib.mkIf config.programs.helix.enable {
+      settings = {
+        theme = "spacebones_light";
+      };
     };
+
+    xdg.configFile."wezterm/wezterm.lua".source = ./wezterm.lua;
+    xdg.configFile."wezterm/shell.lua".text = ''
+      return { "${lib.getExe config.programs.fish.package}", "-l" }
+    '';
 
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;

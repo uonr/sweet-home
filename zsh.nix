@@ -1,8 +1,14 @@
-{ config, lib, pkgs, ... }:
-let cfg = config.home.sweet;
-in lib.mkIf cfg.enable {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.home.sweet;
+in
+lib.mkIf cfg.enable {
   programs.zsh = lib.mkIf config.programs.zsh.enable {
-    enableAutosuggestions = false;
     enableCompletion = true;
     syntaxHighlighting.enable = true;
     autocd = true;
@@ -43,6 +49,10 @@ in lib.mkIf cfg.enable {
       preset = builtins.fromTOML (builtins.readFile presetsPath);
     in
     lib.mkIf config.programs.starship.enable {
-      settings = preset // { nix_shell = { format = "via $symbol"; }; };
+      settings = preset // {
+        nix_shell = {
+          format = "via $symbol";
+        };
+      };
     };
 }
