@@ -15,6 +15,7 @@ lib.mkIf cfg.enable {
     ignores = [
       ".DS_Store"
       ".direnv"
+      "__pycache__"
     ];
     extraConfig = {
       # https://jvns.ca/blog/2024/02/16/popular-git-config-options/
