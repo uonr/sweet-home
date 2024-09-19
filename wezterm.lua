@@ -47,19 +47,6 @@ wezterm.on('window-config-reloaded', function(window, pane)
     -- https://github.com/wez/wezterm/discussions/5024
 end)
 
-config.unix_domains = {
-    {
-      name = 'unix',
-    },
-}
-  
--- This causes `wezterm` to act as though it was started as
--- `wezterm connect unix` by default, connecting to the unix
--- domain on startup.
--- If you prefer to connect manually, leave out this line.
-config.default_gui_startup_args = { 'connect', 'unix' }
-  
-
 config.window_padding = {
     left = 4,
     right = 4,
