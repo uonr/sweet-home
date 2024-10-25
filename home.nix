@@ -123,7 +123,7 @@ in
 
     programs.eza = {
       enable = lib.mkDefault cfg.level != "minimal";
-      icons = cfg.icons;
+      icons = if cfg.icons then "auto" else "never";
       enableFishIntegration = true;
       enableZshIntegration = true;
       extraOptions = [ "--group-directories-first" ];
