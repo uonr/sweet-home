@@ -81,29 +81,26 @@ in
           du-dust
           tealdeer
         ];
-
-        nerd-fonts = lib.optionals cfg.fonts.nerd [
-          (nerdfonts.override {
-            # https://github.com/ryanoasis/nerd-fonts#patched-fonts
-            fonts = [
-              "FantasqueSansMono"
-              "FiraCode"
-              "DroidSansMono"
-              "IBMPlexMono"
-              "Iosevka"
-              "IosevkaTerm"
-              "IntelOneMono"
-              "JetBrainsMono"
-              "VictorMono"
-              "CascadiaCode"
-              "Go-Mono"
-              "SpaceMono"
-              "Hack"
-              "Overpass"
-              "Lilex"
-            ];
-          })
-        ];
+        nerdfonts = lib.optionals cfg.fonts.nerd (
+          with nerd-fonts;
+          [
+            fantasque-sans-mono
+            fira-code
+            droid-sans-mono
+            blex-mono
+            iosevka
+            iosevka-term
+            intel-one-mono
+            jetbrains-mono
+            victor-mono
+            caskaydia-mono
+            go-mono
+            space-mono
+            hack
+            overpass
+            lilex
+          ]
+        );
         fonts = lib.optionals cfg.fonts.normal [
           sarasa-gothic
           iosevka
@@ -117,7 +114,7 @@ in
       basic
       ++ common
       ++ extra
-      ++ nerd-fonts
+      ++ nerdfonts
       ++ fonts
       ++ (lib.optional config.programs.wezterm.enable wezterm);
 
