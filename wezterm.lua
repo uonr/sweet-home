@@ -57,8 +57,8 @@ config.tab_bar_at_bottom = true
 config.hide_tab_bar_if_only_one_tab = true
 
 -- Fix the rendering issue on NixOS https://github.com/NixOS/nixpkgs/issues/336069
-config.front_end = "WebGpu"
-config.enable_wayland = false
+-- config.front_end = "WebGpu"
+config.enable_wayland = true
 
 -- and finally, return the configuration to wezterm
 return config
