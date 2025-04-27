@@ -17,14 +17,18 @@ lib.mkIf cfg.enable {
     dotDir = ".config/zsh";
     history.path = "$HOME/.config/zsh/.zsh_history";
 
-    # set prompt
-    initExtraFirst = lib.mkIf (!config.programs.starship.enable) ''
-      autoload -Uz promptinit
-      promptinit
-      prompt walters
-    '';
-
-    initExtra = builtins.readFile ./init.zsh;
+    initContent =
+      (
+        if config.programs.starship.enable then
+          ""
+        else
+          ''
+            autoload -Uz promptinit
+            promptinit
+            prompt walters
+          ''
+      )
+      + (builtins.readFile ./init.zsh);
     dirHashes = { };
     plugins = with pkgs; [
       {
