@@ -79,6 +79,7 @@ in
           shellcheck
           btop
           du-dust
+          dua
           tealdeer
         ];
         nerdfonts = lib.optionals cfg.fonts.nerd (
