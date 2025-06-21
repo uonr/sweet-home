@@ -17,11 +17,9 @@ let
     lssss = "eza --tree --level=8 --long";
   };
   linuxAliases = optionalAttrs isLinux {
-    sys = "systemctl";
-    jou = "journalctl";
+    ctl = "systemctl";
   };
   darwinAliases = optionalAttrs isDarwin {
-    swhome = "home-manager switch";
     tailscale = "/Applications/Tailscale.app/Contents/MacOS/Tailscale";
   };
   shellAliases = common // linuxAliases // darwinAliases;

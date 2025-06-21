@@ -76,11 +76,14 @@ in
         ];
         extra = lib.optionals (cfg.level == "extra") [
           hut
+          jujutsu
+          yt-dlp
           shellcheck
           btop
           du-dust
           dua
           tealdeer
+          yazi
         ];
         nerdfonts = lib.optionals cfg.fonts.nerd (
           with nerd-fonts;
