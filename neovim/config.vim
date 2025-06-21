@@ -36,8 +36,6 @@ set nowrap
 set novisualbell
 set noerrorbells
 set termguicolors
-set background=dark
-" set background=light
 " colorscheme gruvbox
 colorscheme zenbones
 set list

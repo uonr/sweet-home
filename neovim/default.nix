@@ -27,8 +27,8 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "nkakouros-original";
       repo = "numbers.nvim";
-      rev = "d1f95879a4cdf339f59e6a2dc6aef26912cf554c";
-      sha256 = "eB0G1PUyS9Q6Jv7mku+SW9PCPnoUYz7HRhed38hxskw=";
+      rev = "53a4775539439754208ed4e0bd2e8354c165e66d";
+      sha256 = "sha256-4G/PhJQnog5qA8pCjRm5bIsI1kux9S+6RZ2TsSNKKHM=";
     };
   };
   plugins = {
